@@ -29,11 +29,21 @@ class UriRetriever implements BaseUriRetrieverInterface
      */
     protected $uriRetriever = null;
 
+
+    private $path = null;
+
     /**
      * @var array|object[]
      * @see loadSchema
      */
     private $schemaCache = array();
+
+
+    public function setPath(string $path){
+        $this->path = $path;
+
+        return $this;
+    }
 
     /**
      * Guarantee the correct media type was encountered
@@ -165,22 +175,25 @@ class UriRetriever implements BaseUriRetrieverInterface
      */
     protected function loadSchema($fetchUri)
     {
-        if (isset($this->schemaCache[$fetchUri])) {
-            return $this->schemaCache[$fetchUri];
-        }
-
         $uriRetriever = $this->getUriRetriever();
         $contents = $this->uriRetriever->retrieve($fetchUri);
         $this->confirmMediaType($uriRetriever, $fetchUri);
-        $jsonSchema = json_decode($contents);
+        $jsonSchema = json_decode($contents, true);
 
         if (JSON_ERROR_NONE < $error = json_last_error()) {
             throw new JsonDecodingException($error);
         }
 
-        $this->schemaCache[$fetchUri] = $jsonSchema;
+        if ($this->path && isset($jsonSchema['paths'][$this->path])) {
+            $pathNode = $jsonSchema['paths'][$this->path];
+            $pathsKey = \array_keys($jsonSchema['paths']);
+            unset($jsonSchema['paths']);
+            $jsonSchema['paths'] = \array_flip($pathsKey);
+            $jsonSchema['paths'][$this->path] = $pathNode;
+            unset($pathNode, $pathsKey);
+        }
 
-        return $jsonSchema;
+        return json_decode(json_encode($jsonSchema,JSON_FORCE_OBJECT));
     }
 
     /**
@@ -235,8 +248,8 @@ class UriRetriever implements BaseUriRetrieverInterface
     public function generate(array $components)
     {
         $uri = $components['scheme'] . '://'
-             . $components['authority']
-             . $components['path'];
+            . $components['authority']
+            . $components['path'];
 
         if (array_key_exists('query', $components)) {
             $uri .= $components['query'];
