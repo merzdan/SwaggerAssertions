@@ -1,12 +1,12 @@
 <?php
 
-namespace FR3D\SwaggerAssertions;
+namespace SwaggerAssertions;
 
-use FR3D\SwaggerAssertions\JsonSchema\Uri\Retrievers\FileGetContentsRetriever;
+use SwaggerAssertions\JsonSchema\Uri\Retrievers\FileGetContents;
 use InvalidArgumentException;
-use JsonSchema\RefResolver;
-use JsonSchema\Uri\UriResolver;
-use JsonSchema\Uri\UriRetriever;
+use SwaggerAssertions\JsonSchema\RefResolver;
+use SwaggerAssertions\JsonSchema\Uri\UriResolver;
+use SwaggerAssertions\JsonSchema\Uri\UriRetriever;
 use Rize\UriTemplate\UriTemplate;
 use stdClass;
 
@@ -31,7 +31,7 @@ class SchemaManager
      */
     public static function fromUri($definitionUri)
     {
-        $refResolver = new RefResolver((new UriRetriever())->setUriRetriever(new FileGetContentsRetriever()), new UriResolver());
+        $refResolver = new RefResolver((new UriRetriever())->setUriRetriever(new FileGetContents()), new UriResolver());
 
         return new self($refResolver->resolve($definitionUri));
     }

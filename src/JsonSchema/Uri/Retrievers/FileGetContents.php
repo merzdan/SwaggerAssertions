@@ -1,15 +1,26 @@
 <?php
 
-namespace FR3D\SwaggerAssertions\JsonSchema\Uri\Retrievers;
+/*
+ * This file is part of the JsonSchema package.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use JsonSchema\Exception\ResourceNotFoundException;
-use JsonSchema\Uri\Retrievers\FileGetContents;
+namespace SwaggerAssertions\JsonSchema\Uri\Retrievers;
+
+use SwaggerAssertions\JsonSchema\Exception\ResourceNotFoundException;
+use SwaggerAssertions\JsonSchema\Validator;
 
 /**
- * Workaround to BC Break https://github.com/justinrainbow/json-schema/pull/262
+ * Tries to retrieve JSON schemas from a URI using file_get_contents()
+ *
+ * @author Sander Coolen <sander@jibber.nl>
  */
-class FileGetContentsRetriever extends FileGetContents
+class FileGetContents extends AbstractRetriever
 {
+    protected $messageBody;
+
     public function retrieve($uri)
     {
         set_error_handler(function () use ($uri) {
@@ -51,5 +62,16 @@ class FileGetContentsRetriever extends FileGetContents
         }
 
         return false;
+    }
+
+    /**
+     * @param string $header
+     * @return string|null
+     */
+    protected static function getContentTypeMatchInHeader($header)
+    {
+        if (0 < preg_match("/Content-Type:(\V*)/ims", $header, $match)) {
+            return trim($match[1]);
+        }
     }
 }
