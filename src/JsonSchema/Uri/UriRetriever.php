@@ -170,7 +170,7 @@ class UriRetriever implements BaseUriRetrieverInterface
         unset($jsonSchema->paths);
         $jsonSchema->paths = json_decode(json_encode([
             $path => $pathNode
-        ],JSON_FORCE_OBJECT));
+        ]));
 
         return $jsonSchema;
     }
@@ -190,7 +190,12 @@ class UriRetriever implements BaseUriRetrieverInterface
             $fetchUri = $resolver->generate($arParts);
         }
 
-        $jsonSchema = $this->loadSchema($fetchUri);
+        if (isset($this->schemaCache[$fetchUri])) {
+            $jsonSchema =  $this->schemaCache[$fetchUri];
+        } else {
+            $jsonSchema = $this->loadSchema($fetchUri);
+            $this->schemaCache[$fetchUri] = $jsonSchema;
+        }
 
         // Use the JSON pointer if specified
         $jsonSchema = $this->resolvePointer($jsonSchema, $resolvedUri);
@@ -212,9 +217,7 @@ class UriRetriever implements BaseUriRetrieverInterface
      */
     protected function loadSchema($fetchUri)
     {
-        if (isset($this->schemaCache[$fetchUri])) {
-            return $this->schemaCache[$fetchUri];
-        }
+
 
         $uriRetriever = $this->getUriRetriever();
         $contents = $this->uriRetriever->retrieve($fetchUri);
@@ -224,8 +227,6 @@ class UriRetriever implements BaseUriRetrieverInterface
         if (JSON_ERROR_NONE < $error = json_last_error()) {
             throw new JsonDecodingException($error);
         }
-
-        $this->schemaCache[$fetchUri] = $jsonSchema;
 
         return $jsonSchema;
     }
