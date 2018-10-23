@@ -1,10 +1,10 @@
 <?php
 
-namespace FR3D\SwaggerAssertions\PhpUnit;
+namespace SwaggerAssertions\PhpUnit;
 
-use FR3D\SwaggerAssertions\SchemaManager;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use SwaggerAssertions\SchemaManager;
 
 /**
  * Facade functions for interact with Guzzle constraints.
@@ -30,7 +30,7 @@ trait GuzzleAssertsTrait
         $message = ''
     ) {
         $this->assertResponseMediaTypeMatch(
-            $response->getHeader('Content-Type'),
+            $response->getHeader('Content-Type')[0],
             $schemaManager,
             $path,
             $httpMethod,
@@ -71,7 +71,8 @@ trait GuzzleAssertsTrait
         SchemaManager $schemaManager,
         $message = ''
     ) {
-        $path = $request->getPath();
+        $uri        = $request->getUri();
+        $path       = $uri->getPath();
         $httpMethod = $request->getMethod();
 
         $headers = $this->inlineHeaders($request->getHeaders());
@@ -86,7 +87,7 @@ trait GuzzleAssertsTrait
 
         if (!empty((string) $request->getBody())) {
             $this->assertRequestMediaTypeMatch(
-                $request->getHeader('Content-Type'),
+                $request->getHeader('Content-Type')[0],
                 $schemaManager,
                 $path,
                 $httpMethod,
@@ -119,7 +120,7 @@ trait GuzzleAssertsTrait
     ) {
         try {
             $this->assertRequestMatch($request, $schemaManager, $message);
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (\PHPUnit\Framework\ExpectationFailedException $e) {
             // If response represent a Client error then ignore.
             $statusCode = $response->getStatusCode();
             if ($statusCode < 400 || $statusCode > 499) {
@@ -127,7 +128,10 @@ trait GuzzleAssertsTrait
             }
         }
 
-        $this->assertResponseMatch($response, $schemaManager, $request->getPath(), $request->getMethod(), $message);
+        $uri  = $request->getUri();
+        $path = $uri->getPath();
+
+        $this->assertResponseMatch($response, $schemaManager, $path, $request->getMethod(), $message);
     }
 
     /**

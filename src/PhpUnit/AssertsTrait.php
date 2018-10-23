@@ -1,10 +1,9 @@
 <?php
 
-namespace FR3D\SwaggerAssertions\PhpUnit;
+namespace SwaggerAssertions\PhpUnit;
 
-use FR3D\SwaggerAssertions\SchemaManager;
-use PHPUnit_Framework_Assert as Assert;
-use stdClass;
+use SwaggerAssertions\SchemaManager;
+use PHPUnit\Framework\Assert;
 use Zend\Http\Header\ContentType;
 
 /**
@@ -15,7 +14,7 @@ trait AssertsTrait
     /**
      * Asserts response body match with the response schema.
      *
-     * @param stdClass|stdClass[] $responseBody
+     * @param \stdClass|\stdClass[] $responseBody
      * @param SchemaManager $schemaManager
      * @param string $path percent-encoded path used on the request.
      * @param string $httpMethod
@@ -43,7 +42,7 @@ trait AssertsTrait
     /**
      * Asserts request body match with the request schema.
      *
-     * @param stdClass|stdClass[] $requestBody
+     * @param \stdClass|\stdClass[] $requestBody
      * @param SchemaManager $schemaManager
      * @param string $path percent-encoded path used on the request.
      * @param string $httpMethod

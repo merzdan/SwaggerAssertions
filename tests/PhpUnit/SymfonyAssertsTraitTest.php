@@ -1,18 +1,18 @@
 <?php
 
-namespace FR3D\SwaggerAssertionsTest\PhpUnit;
+namespace SwaggerAssertionsTest\PhpUnit;
 
-use FR3D\SwaggerAssertions\PhpUnit\SymfonyAssertsTrait;
-use FR3D\SwaggerAssertions\SchemaManager;
-use PHPUnit_Framework_ExpectationFailedException as ExpectationFailedException;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
-use PHPUnit_Framework_TestCase as TestCase;
+use SwaggerAssertions\PhpUnit\SymfonyAssertsTrait;
+use SwaggerAssertions\SchemaManager;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @covers FR3D\SwaggerAssertions\PhpUnit\SymfonyAssertsTrait
+ * @covers SymfonyAssertsTrait
  */
 class SymfonyAssertsTraitTest extends TestCase
 {
@@ -59,7 +59,7 @@ class SymfonyAssertsTraitTest extends TestCase
 
         try {
             self::assertResponseAndRequestMatch($response, $request, $this->schemaManager);
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (ExpectationFailedException $e) {
             self::assertContains('request', $e->getMessage());
         }
     }

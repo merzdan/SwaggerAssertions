@@ -27,17 +27,17 @@ class Factory
      * @var array $constraintMap
      */
     protected $constraintMap = array(
-        'array' => 'JsonSchema\Constraints\CollectionConstraint',
-        'collection' => 'JsonSchema\Constraints\CollectionConstraint',
-        'object' => 'JsonSchema\Constraints\ObjectConstraint',
-        'type' => 'JsonSchema\Constraints\TypeConstraint',
-        'undefined' => 'JsonSchema\Constraints\UndefinedConstraint',
-        'string' => 'JsonSchema\Constraints\StringConstraint',
-        'number' => 'JsonSchema\Constraints\NumberConstraint',
-        'enum' => 'JsonSchema\Constraints\EnumConstraint',
-        'format' => 'JsonSchema\Constraints\FormatConstraint',
-        'schema' => 'JsonSchema\Constraints\SchemaConstraint',
-        'validator' => 'JsonSchema\Validator',
+        'array' => 'SwaggerAssertions\JsonSchema\Constraints\CollectionConstraint',
+        'collection' => 'SwaggerAssertions\JsonSchema\Constraints\CollectionConstraint',
+        'object' => 'SwaggerAssertions\JsonSchema\Constraints\ObjectConstraint',
+        'type' => 'SwaggerAssertions\JsonSchema\Constraints\TypeConstraint',
+        'undefined' => 'SwaggerAssertions\JsonSchema\Constraints\UndefinedConstraint',
+        'string' => 'SwaggerAssertions\JsonSchema\Constraints\StringConstraint',
+        'number' => 'SwaggerAssertions\JsonSchema\Constraints\NumberConstraint',
+        'enum' => 'SwaggerAssertions\JsonSchema\Constraints\EnumConstraint',
+        'format' => 'SwaggerAssertions\JsonSchema\Constraints\FormatConstraint',
+        'schema' => 'SwaggerAssertions\JsonSchema\Constraints\SchemaConstraint',
+        'validator' => 'SwaggerAssertions\JsonSchema\Validator',
     );
 
     /**
@@ -72,7 +72,7 @@ class Factory
         throw new InvalidArgumentException('Unknown constraint ' . $name);
       }
       // Ensure class is appropriate
-      if (!in_array('JsonSchema\Constraints\ConstraintInterface', class_implements($class))) {
+      if (!in_array('SwaggerAssertions\JsonSchema\Constraints\ConstraintInterface', class_implements($class))) {
         throw new InvalidArgumentException('Invalid class ' . $name);
       }
       $this->constraintMap[$name] = $class;

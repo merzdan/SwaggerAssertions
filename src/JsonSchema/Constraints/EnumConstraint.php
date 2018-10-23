@@ -30,7 +30,7 @@ class EnumConstraint extends Constraint
         foreach ($schema->enum as $enum) {
             $type = gettype($element);
             if ($type === gettype($enum)) {
-                if ($type == "object") {
+                if ($type === "object") {
                     if ($element == $enum)
                         return;
                 } else {

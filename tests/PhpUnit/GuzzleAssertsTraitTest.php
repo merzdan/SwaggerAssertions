@@ -1,15 +1,17 @@
 <?php
 
-namespace FR3D\SwaggerAssertionsTest\PhpUnit;
+namespace SwaggerAssertionsTest\PhpUnit;
 
-use FR3D\SwaggerAssertions\PhpUnit\GuzzleAssertsTrait;
-use FR3D\SwaggerAssertions\SchemaManager;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Stream\StreamInterface;
-use PHPUnit_Framework_ExpectationFailedException as ExpectationFailedException;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
-use PHPUnit_Framework_TestCase as TestCase;
+use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
+use SwaggerAssertions\PhpUnit\GuzzleAssertsTrait;
+use SwaggerAssertions\SchemaManager;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\StreamInterface;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers FR3D\SwaggerAssertions\PhpUnit\GuzzleAssertsTrait
@@ -59,7 +61,7 @@ class GuzzleAssertsTraitTest extends TestCase
 
         try {
             self::assertResponseAndRequestMatch($response, $request, $this->schemaManager);
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (ExpectationFailedException $e) {
             self::assertContains('request', $e->getMessage());
         }
     }
@@ -261,13 +263,13 @@ JSON;
     {
         $headersMap = $this->transformHeadersToMap($headers);
 
-        /** @var RequestInterface|MockObject $request */
-        $request = $this->getMock(RequestInterface::class);
+        /** @var Request|MockObject $request */
+        $request = $this->createMock(Request::class);
         $request->method('getHeader')->willReturnMap($headersMap);
         $request->method('getHeaders')->willReturn($headers);
         $request->method('getMethod')->willReturn($method);
-        $request->method('getPath')->willReturn($path);
         $request->method('getBody')->willReturn($this->createMockStream($body));
+        $request->method('getUri')->willReturn($this->createMockUri($path));
 
         return $request;
     }
@@ -283,8 +285,8 @@ JSON;
     {
         $headersMap = $this->transformHeadersToMap($headers);
 
-        /** @var ResponseInterface|MockObject $response */
-        $response = $this->getMock(ResponseInterface::class);
+        /** @var Response|MockObject $response */
+        $response = $this->createMock(Response::class);
         $response->method('getStatusCode')->willReturn($statusCode);
         $response->method('getHeader')->willReturnMap($headersMap);
         $response->method('getHeaders')->willReturn($headers);
@@ -301,10 +303,24 @@ JSON;
     protected function createMockStream($body)
     {
         /** @var StreamInterface|MockObject $stream */
-        $stream = $this->getMock(StreamInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
         $stream->method('__toString')->willReturn($body);
 
         return $stream;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return UriInterface|MockObject
+     */
+    protected function createMockUri($path)
+    {
+        /** @var StreamInterface|MockObject $stream */
+        $uri = $this->createMock(UriInterface::class);
+        $uri->method('getPath')->willReturn($path);
+
+        return $uri;
     }
 
     /**
@@ -316,7 +332,8 @@ JSON;
     {
         $headersMap = [];
         foreach ($headers as $headerName => $headerValues) {
-            $headersMap[$headerName] = [$headerName, implode(', ', $headerValues)];
+            $implode = implode(', ', $headerValues);
+            $headersMap[$headerName] = [$headerName, \is_array($implode) ? $implode : [$implode]];
         }
 
         return $headersMap;

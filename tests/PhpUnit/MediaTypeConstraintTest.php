@@ -1,19 +1,19 @@
 <?php
 
-namespace FR3D\SwaggerAssertionsTest\PhpUnit;
+namespace SwaggerAssertionsTest\PhpUnit;
 
-use FR3D\SwaggerAssertions\PhpUnit\MediaTypeConstraint;
-use PHPUnit_Framework_ExpectationFailedException as ExpectationFailedException;
-use PHPUnit_Framework_TestCase as TestCase;
-use PHPUnit_Framework_TestFailure as TestFailure;
+use SwaggerAssertions\PhpUnit\MediaTypeConstraint;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestFailure;
 
 /**
- * @covers FR3D\SwaggerAssertions\PhpUnit\MediaTypeConstraint
+ * @covers MediaTypeConstraint
  */
 class MediaTypeConstraintTest extends TestCase
 {
     /**
-     * @var \PHPUnit_Framework_Constraint
+     * @var \PHPUnit\Framework\Constraint\Constraint
      */
     protected $constraint;
 

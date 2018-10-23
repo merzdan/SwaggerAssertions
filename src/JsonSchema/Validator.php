@@ -9,7 +9,6 @@
 
 namespace SwaggerAssertions\JsonSchema;
 
-use SwaggerAssertions\JsonSchema\Constraints\SchemaConstraint;
 use SwaggerAssertions\JsonSchema\Constraints\Constraint;
 
 /**

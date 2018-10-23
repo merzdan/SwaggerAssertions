@@ -1,6 +1,6 @@
 <?php
 
-namespace FR3D\SwaggerAssertions\PhpUnit;
+namespace SwaggerAssertions\PhpUnit;
 
 /**
  * Validate response headers match against defined Swagger response headers schema.

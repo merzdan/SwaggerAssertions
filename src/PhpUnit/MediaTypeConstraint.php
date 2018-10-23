@@ -1,8 +1,8 @@
 <?php
 
-namespace FR3D\SwaggerAssertions\PhpUnit;
+namespace SwaggerAssertions\PhpUnit;
 
-use PHPUnit_Framework_Constraint as Constraint;
+use PHPUnit\Framework\Constraint\Constraint;
 
 /**
  * Validate given media type is present in the allowed media type collection.
@@ -29,7 +29,7 @@ class MediaTypeConstraint extends Constraint
      */
     protected function matches($other)
     {
-        return in_array($other, $this->allowedMediaTypes, true);
+        return \in_array($other, $this->allowedMediaTypes, true);
     }
 
     /**

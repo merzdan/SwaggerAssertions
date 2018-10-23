@@ -1,7 +1,7 @@
 <?php
 
-use FR3D\SwaggerAssertions\PhpUnit\Psr7AssertsTrait;
-use FR3D\SwaggerAssertions\SchemaManager;
+use SwaggerAssertions\PhpUnit\Psr7AssertsTrait;
+use SwaggerAssertions\SchemaManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7\Request;
 /**
  * PHPUnit-Guzzle integration example.
  */
-class Psr7WithGuzzleV6Test extends \PHPUnit_Framework_TestCase
+class Psr7WithGuzzleV6Test extends \PHPUnit\Framework\TestCase
 {
     use Psr7AssertsTrait;
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace FR3D\SwaggerAssertionsTest;
+namespace SwaggerAssertionsTest;
 
-use FR3D\SwaggerAssertions\SchemaManager;
-use PHPUnit_Framework_TestCase as TestCase;
+use SwaggerAssertions\SchemaManager;
+use PHPUnit\Framework\TestCase;
 
 /**
- * @covers FR3D\SwaggerAssertions\SchemaManager
+ * @covers SwaggerAssertions\SchemaManager
  */
 class SchemaManagerTest extends TestCase
 {

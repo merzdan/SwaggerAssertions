@@ -6,10 +6,10 @@
         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd">
     <testsuites>
         <testsuite name="library">
-            <directory suffix="Test.php">tests/</directory>
+            <directory>tests/</directory>
         </testsuite>
         <testsuite name="examples">
-            <directory suffix="Test.php">example/</directory>
+            <directory>example/</directory>
         </testsuite>
     </testsuites>
 

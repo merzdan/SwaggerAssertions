@@ -1,11 +1,11 @@
 <?php
 
-namespace FR3D\SwaggerAssertionsTest\PhpUnit;
+namespace SwaggerAssertionsTest\PhpUnit;
 
-use FR3D\SwaggerAssertions\PhpUnit\AssertsTrait;
-use FR3D\SwaggerAssertions\SchemaManager;
-use PHPUnit_Framework_ExpectationFailedException as ExpectationFailedException;
-use PHPUnit_Framework_TestCase as TestCase;
+use SwaggerAssertions\PhpUnit\AssertsTrait;
+use SwaggerAssertions\SchemaManager;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers FR3D\SwaggerAssertions\PhpUnit\AssertsTrait

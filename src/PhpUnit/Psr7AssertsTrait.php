@@ -1,8 +1,8 @@
 <?php
 
-namespace FR3D\SwaggerAssertions\PhpUnit;
+namespace SwaggerAssertions\PhpUnit;
 
-use FR3D\SwaggerAssertions\SchemaManager;
+use SwaggerAssertions\SchemaManager;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -119,7 +119,7 @@ trait Psr7AssertsTrait
     ) {
         try {
             $this->assertRequestMatch($request, $schemaManager, $message);
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (\PHPUnit\Framework\ExpectationFailedException $e) {
             // If response represent a Client error then ignore.
             $statusCode = $response->getStatusCode();
             if ($statusCode < 400 || $statusCode > 499) {

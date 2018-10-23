@@ -1,9 +1,9 @@
 <?php
 
-namespace FR3D\SwaggerAssertions\PhpUnit;
+namespace SwaggerAssertions\PhpUnit;
 
-use JsonSchema\Validator;
-use PHPUnit_Framework_Constraint as Constraint;
+use SwaggerAssertions\JsonSchema\Validator;
+use \PHPUnit\Framework\Constraint\Constraint;
 
 /**
  * Validate given value match the expected JSON Schema.
@@ -53,7 +53,7 @@ class JsonSchemaConstraint extends Constraint
     /**
      * {@inheritdoc}
      */
-    protected function additionalFailureDescription($other)
+    protected function additionalFailureDescription($other): string
     {
         $description = '';
 
@@ -68,7 +68,7 @@ class JsonSchemaConstraint extends Constraint
     /**
      * {@inheritdoc}
      */
-    public function toString()
+    public function toString(): string
     {
         return 'is a valid ' . $this->context;
     }

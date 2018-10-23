@@ -49,8 +49,7 @@ abstract class Constraint implements ConstraintInterface
      */
     public function getUriRetriever()
     {
-        if (is_null($this->uriRetriever))
-        {
+        if (null === $this->uriRetriever) {
             $this->setUriRetriever(new UriRetriever);
         }
 
@@ -88,7 +87,7 @@ abstract class Constraint implements ConstraintInterface
             'constraint' => $constraint,
         );
 
-        if (is_array($more) && count($more) > 0)
+        if (\is_array($more) && \count($more) > 0)
         {
             $error += $more;
         }

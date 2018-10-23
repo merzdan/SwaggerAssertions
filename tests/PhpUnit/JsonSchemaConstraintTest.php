@@ -2,18 +2,18 @@
 
 namespace FR3D\SwaggerAssertionsTest\PhpUnit;
 
-use FR3D\SwaggerAssertions\PhpUnit\JsonSchemaConstraint;
-use PHPUnit_Framework_ExpectationFailedException as ExpectationFailedException;
-use PHPUnit_Framework_TestCase as TestCase;
-use PHPUnit_Framework_TestFailure as TestFailure;
+use SwaggerAssertions\PhpUnit\JsonSchemaConstraint;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestFailure;
 
 /**
- * @covers FR3D\SwaggerAssertions\PhpUnit\JsonSchemaConstraint
+ * @covers JsonSchemaConstraint
  */
 class JsonSchemaConstraintTest extends TestCase
 {
     /**
-     * @var \PHPUnit_Framework_Constraint
+     * @var Constraint
      */
     protected $constraint;
 

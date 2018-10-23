@@ -1,14 +1,14 @@
 <?php
 
-use FR3D\SwaggerAssertions\PhpUnit\GuzzleAssertsTrait;
-use FR3D\SwaggerAssertions\SchemaManager;
+use SwaggerAssertions\PhpUnit\GuzzleAssertsTrait;
+use SwaggerAssertions\SchemaManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 
 /**
  * PHPUnit-Guzzle integration example.
  */
-class GuzzleTest extends \PHPUnit_Framework_TestCase
+class GuzzleTest extends \PHPUnit\Framework\TestCase
 {
     use GuzzleAssertsTrait;
 
@@ -24,9 +24,6 @@ class GuzzleTest extends \PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        if (version_compare(ClientInterface::VERSION, '6.0', '>=')) {
-            self::markTestSkipped('This example requires Guzzle V5 installed');
-        }
         self::$schemaManager = SchemaManager::fromUri('http://petstore.swagger.io/v2/swagger.json');
     }
 
@@ -37,8 +34,10 @@ class GuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testFetchPetMatchDefinition()
     {
-        $request = $this->guzzleHttpClient->createRequest('GET', 'http://petstore.swagger.io/v2/pet/findByStatus');
-        $request->addHeader('Accept', 'application/json');
+        $request = new \GuzzleHttp\Psr7\Request('GET', 'http://petstore.swagger.io/v2/pet/findByStatus', [
+            GuzzleHttp\RequestOptions::JSON
+        ]);
+        $request->withAddedHeader('Content-Type', 'application/json');
 
         $response = $this->guzzleHttpClient->send($request);
 
@@ -47,8 +46,10 @@ class GuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testOnlyResponse()
     {
-        $request = $this->guzzleHttpClient->createRequest('GET', 'http://petstore.swagger.io/v2/pet/findByStatus');
-        $request->addHeader('Accept', 'application/json');
+        $request = new \GuzzleHttp\Psr7\Request('GET', 'http://petstore.swagger.io/v2/pet/findByStatus', [
+            GuzzleHttp\RequestOptions::JSON
+        ]);
+        $request->withAddedHeader('Content-Type', 'application/json');
 
         $response = $this->guzzleHttpClient->send($request);
 

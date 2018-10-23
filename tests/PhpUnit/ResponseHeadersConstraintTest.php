@@ -1,14 +1,14 @@
 <?php
 
-namespace FR3D\SwaggerAssertionsTest\PhpUnit;
+namespace SwaggerAssertionsTest\PhpUnit;
 
-use FR3D\SwaggerAssertions\PhpUnit\ResponseHeadersConstraint;
-use PHPUnit_Framework_ExpectationFailedException as ExpectationFailedException;
-use PHPUnit_Framework_TestCase as TestCase;
-use PHPUnit_Framework_TestFailure as TestFailure;
+use SwaggerAssertions\PhpUnit\ResponseHeadersConstraint;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestFailure;
 
 /**
- * @covers FR3D\SwaggerAssertions\PhpUnit\ResponseHeadersConstraint
+ * @covers ResponseHeadersConstraint
  */
 class ResponseHeadersConstraintTest extends TestCase
 {
