@@ -74,7 +74,7 @@ class RefResolver
         $schema           = $this->uriRetriever->retrievePath($fileName, $path);
         $paths[$fileName] = $schema;
 
-        $this->resolveSchemas($schema, $jsonPointer->getFilename(), []);
+        $this->resolveSchemas($schema, $jsonPointer->getFilename(), $paths);
 
         $schema = $this->getRefSchema($jsonPointer, $schema);
         $pathNode = $schema->paths->{$path};

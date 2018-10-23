@@ -146,7 +146,7 @@ class UriRetriever implements BaseUriRetrieverInterface
         $resolver = new UriResolver();
         $resolvedUri = $fetchUri = $resolver->resolve($uri, $baseUri);
 
-        $jsonSchema = $this->loadSchema($fetchUri);
+        $jsonSchema = $this->loadSchema($fetchUri, false);
 
         $paths = array_flip(array_keys((array)$jsonSchema->paths));
         unset($jsonSchema->paths, $jsonSchema->definitions);
@@ -164,7 +164,7 @@ class UriRetriever implements BaseUriRetrieverInterface
         $resolver = new UriResolver();
         $fetchUri = $resolver->resolve($uri, $baseUri);
 
-        $jsonSchema = $this->loadSchema($fetchUri);
+        $jsonSchema = $this->loadSchema($fetchUri, false);
 
         $pathNode = $jsonSchema->paths->{$path};
         unset($jsonSchema->paths);
@@ -190,12 +190,7 @@ class UriRetriever implements BaseUriRetrieverInterface
             $fetchUri = $resolver->generate($arParts);
         }
 
-        if (isset($this->schemaCache[$fetchUri])) {
-            $jsonSchema =  $this->schemaCache[$fetchUri];
-        } else {
-            $jsonSchema = $this->loadSchema($fetchUri);
-            $this->schemaCache[$fetchUri] = $jsonSchema;
-        }
+        $jsonSchema = $this->loadSchema($fetchUri);
 
         // Use the JSON pointer if specified
         $jsonSchema = $this->resolvePointer($jsonSchema, $resolvedUri);
@@ -212,22 +207,32 @@ class UriRetriever implements BaseUriRetrieverInterface
      * Caches schema objects.
      *
      * @param string $fetchUri Absolute URI
+     * @param bool $useCache
      *
      * @return object JSON schema object
      */
-    protected function loadSchema($fetchUri)
+    protected function loadSchema($fetchUri, $useCache = true)
     {
+        if ($useCache && isset($this->schemaCache[$fetchUri])) {
+            unset($this->uriRetriever);
+            return $this->schemaCache[$fetchUri];
+        }
         $uriRetriever = $this->getUriRetriever();
         $contents = $this->uriRetriever->retrieve($fetchUri);
         $this->confirmMediaType($uriRetriever, $fetchUri);
         $jsonSchema = json_decode($contents);
-
+        unset($contents);
         if (JSON_ERROR_NONE < $error = json_last_error()) {
             throw new JsonDecodingException($error);
         }
-        unset($contents);
 
-        return $jsonSchema;
+        if ($useCache) {
+            $this->schemaCache[$fetchUri] = $jsonSchema;
+            unset($jsonSchema);
+            return $this->schemaCache[$fetchUri];
+        } else {
+            return $jsonSchema;
+        }
     }
 
     /**
