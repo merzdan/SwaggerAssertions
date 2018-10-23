@@ -150,7 +150,7 @@ class UriRetriever implements BaseUriRetrieverInterface
 
         $paths = array_flip(array_keys((array)$jsonSchema->paths));
         unset($jsonSchema->paths, $jsonSchema->definitions);
-        $jsonSchema->paths = $paths;
+        $jsonSchema->paths = (object)$paths;
 
         if ($jsonSchema instanceof \stdClass) {
             $jsonSchema->id = $resolvedUri;

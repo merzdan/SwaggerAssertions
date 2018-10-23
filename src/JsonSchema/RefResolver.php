@@ -76,7 +76,11 @@ class RefResolver
 
         $this->resolveSchemas($schema, $jsonPointer->getFilename(), []);
 
-        return $this->getRefSchema($jsonPointer, $schema);
+        $schema = $this->getRefSchema($jsonPointer, $schema);
+        $pathNode = $schema->paths->{$path};
+        unset($schema, $jsonPointer);
+
+        return $pathNode;
     }
 
     /**
