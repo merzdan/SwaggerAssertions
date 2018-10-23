@@ -36,6 +36,16 @@ class SchemaManager
         return new self($refResolver->resolve($definitionUri));
     }
 
+    private function resolvePathScheme($definitionUri, $path): self
+    {
+        $refResolver = new RefResolver((new UriRetriever())->setUriRetriever(new FileGetContents()), new UriResolver());
+
+        $this->definition->paths->{$path} = $refResolver->resolvePath($definitionUri, $path);
+
+
+        return $this;
+    }
+
     /**
      * @param object $definition Swagger 2 definition with all their references resolved.
      */
@@ -144,6 +154,25 @@ class SchemaManager
      *
      * @return bool If path exists.
      */
+    public function hasResolvedPath(array $segments): bool
+    {
+        $result = $this->definition;
+        foreach ($segments as $segment) {
+            if (isset($result->$segment) && !($result->$segment instanceof \stdClass)) {
+                return false;
+            }
+
+            $result = $result->$segment;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string[] $segments
+     *
+     * @return bool If path exists.
+     */
     public function hasPath(array $segments): bool
     {
         $result = $this->definition;
@@ -181,7 +210,7 @@ class SchemaManager
 
                 // Swagger don't follow RFC6570 so array parameters must be treated like a single string argument.
                 array_walk($params, function (&$param) {
-                    if (is_array($param)) {
+                    if (\is_array($param)) {
                         $param = implode(',', $param);
                     }
                 });
@@ -330,6 +359,15 @@ class SchemaManager
      */
     public function getRequestParameters($path, $method)
     {
+        $pathSegment = [
+                'paths',
+                $path,
+         ];
+
+        if (false === $this->hasResolvedPath($pathSegment)) {
+            $this->resolvePathScheme($this->definition->id, $path);
+        }
+
         $method = $this->getMethod($path, $method);
         if (!isset($method->parameters)) {
             return [];

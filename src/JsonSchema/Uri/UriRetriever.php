@@ -159,6 +159,22 @@ class UriRetriever implements BaseUriRetrieverInterface
         return $jsonSchema;
     }
 
+    public function retrievePath($uri, $path, $baseUri = null)
+    {
+        $resolver = new UriResolver();
+        $fetchUri = $resolver->resolve($uri, $baseUri);
+
+        $jsonSchema = $this->loadSchema($fetchUri);
+
+        $pathNode = $jsonSchema->paths->{$path};
+        unset($jsonSchema->paths);
+        $jsonSchema->paths = json_decode(json_encode([
+            $path => $pathNode
+        ],JSON_FORCE_OBJECT));
+
+        return $jsonSchema;
+    }
+
     /**
      * {@inheritdoc}
      */

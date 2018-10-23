@@ -63,6 +63,24 @@ class RefResolver
 
     /**
      * @param string $sourceUri URI where this schema was located
+     * @param string $path
+
+     * @return object
+     */
+    public function resolvePath($sourceUri, $path)
+    {
+        $jsonPointer      = new JsonPointer($sourceUri);
+        $fileName         = $jsonPointer->getFilename();
+        $schema           = $this->uriRetriever->retrievePath($fileName, $path);
+        $paths[$fileName] = $schema;
+
+        $this->resolveSchemas($schema, $jsonPointer->getFilename(), []);
+
+        return $this->getRefSchema($jsonPointer, $schema);
+    }
+
+    /**
+     * @param string $sourceUri URI where this schema was located
      * @param array $paths
      * @return object
      */
