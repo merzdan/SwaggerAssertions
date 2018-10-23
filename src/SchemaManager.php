@@ -165,7 +165,7 @@ class SchemaManager
      *
      * @return bool
      */
-    public function findPathInTemplates($requestPath, &$path, array &$params = []): bool
+    public function findPathInTemplates($requestPath, &$path, &$params = []): bool
     {
         $uriTemplateManager = new UriTemplate();
         foreach ($this->getPathTemplates() as $template) {
