@@ -217,8 +217,6 @@ class UriRetriever implements BaseUriRetrieverInterface
      */
     protected function loadSchema($fetchUri)
     {
-
-
         $uriRetriever = $this->getUriRetriever();
         $contents = $this->uriRetriever->retrieve($fetchUri);
         $this->confirmMediaType($uriRetriever, $fetchUri);
@@ -227,6 +225,7 @@ class UriRetriever implements BaseUriRetrieverInterface
         if (JSON_ERROR_NONE < $error = json_last_error()) {
             throw new JsonDecodingException($error);
         }
+        unset($contents);
 
         return $jsonSchema;
     }
