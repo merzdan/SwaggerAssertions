@@ -42,7 +42,6 @@ class SchemaManager
 
         $this->definition->paths->{$path} = $refResolver->resolvePath($definitionUri, $path);
 
-
         return $this;
     }
 
@@ -395,7 +394,7 @@ class SchemaManager
     private function filterParametersObjectByLocation($parameters, $location)
     {
         return array_values(array_filter(
-            $parameters,
+            (array)$parameters,
             function ($parameter) use ($location) {
                 if (!isset($parameter->in)) {
                     // @codeCoverageIgnoreStart
