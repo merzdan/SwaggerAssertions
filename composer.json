@@ -12,7 +12,8 @@
     "license": "BSD-2-Clause",
     "homepage": "https://github.com/merzdan/SwaggerAssertions",
     "require": {
-        "php": ">= 5.5.0",
+        "php": ">7.0.0",
+        "ext-json": "*",
         "rize/uri-template": "^0.3.0"
     },
     "require-dev": {

@@ -25,22 +25,23 @@ class UriResolver implements UriResolverInterface
      * @param string $uri
      * @return array 
      */
-    public function parse($uri)
+    public function parse($uri): array
     {
+        $match = null;
         preg_match('|^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?|', $uri, $match);
 
-        $components = array();
-        if (5 < count($match)) {
-            $components =  array(
+        $components = [];
+        if (5 < \count($match)) {
+            $components = [
                 'scheme'    => $match[2],
                 'authority' => $match[4],
-                'path'      => $match[5]
-            );
+                'path'      => $match[5],
+            ];
         } 
-        if (7 < count($match)) {
+        if (isset($match[7])) {
             $components['query'] = $match[7];
         }
-        if (9 < count($match)) {
+        if (isset($match[9])) {
             $components['fragment'] = $match[9];
         }
         
@@ -53,7 +54,7 @@ class UriResolver implements UriResolverInterface
      * @param array $components
      * @return string 
      */
-    public function generate(array $components)
+    public function generate(array $components): string
     {
         $uri = $components['scheme'] . '://' 
              . $components['authority']
@@ -74,18 +75,18 @@ class UriResolver implements UriResolverInterface
      */
     public function resolve($uri, $baseUri = null)
     {
-        if ($uri == '') {
+        if ($uri === '') {
             return $baseUri;
         }
 
         $components = $this->parse($uri);
-        $path = $components['path'];
+        $path       = $components['path'];
         
-        if (! empty($components['scheme'])) {
+        if (!empty($components['scheme'])) {
             return $uri;
         }
         $baseComponents = $this->parse($baseUri);
-        $basePath = $baseComponents['path'];
+        $basePath       = $baseComponents['path'];
         
         $baseComponents['path'] = self::combineRelativePathWithBasePath($path, $basePath);
         if (isset($components['fragment'])) {
@@ -100,28 +101,30 @@ class UriResolver implements UriResolverInterface
      *
      * @param string $relativePath
      * @param string $basePath
+     *
      * @return string Merged path
+     *
      * @throws UriResolverException
      */
     public static function combineRelativePathWithBasePath($relativePath, $basePath)
     {
         $relativePath = self::normalizePath($relativePath);
-        if ($relativePath == '') {
+        if ($relativePath === '') {
             return $basePath;
         }
-        if ($relativePath{0} == '/') {
+        if (strpos($relativePath, '/') === 0) {
             return $relativePath;
         }
 
         $basePathSegments = explode('/', $basePath);
 
         preg_match('|^/?(\.\./(?:\./)*)*|', $relativePath, $match);
-        $numLevelUp = strlen($match[0]) /3 + 1;
-        if ($numLevelUp >= count($basePathSegments)) {
+        $numLevelUp = \strlen($match[0]) /3 + 1;
+        if ($numLevelUp >= \count($basePathSegments)) {
             throw new UriResolverException(sprintf("Unable to resolve URI '%s' from base '%s'", $relativePath, $basePath));
         }
 
-        $basePathSegments = array_slice($basePathSegments, 0, -$numLevelUp);
+        $basePathSegments = \array_slice($basePathSegments, 0, -$numLevelUp);
         $path = preg_replace('|^/?(\.\./(\./)*)*|', '', $relativePath);
 
         return implode('/', $basePathSegments) . '/' . $path;
@@ -133,7 +136,7 @@ class UriResolver implements UriResolverInterface
      * @param string $path
      * @return string
      */
-    private static function normalizePath($path)
+    private static function normalizePath($path): string
     {
         $path = preg_replace('|((?<!\.)\./)*|', '', $path);
         $path = preg_replace('|//|', '/', $path);
@@ -145,7 +148,7 @@ class UriResolver implements UriResolverInterface
      * @param string $uri
      * @return boolean 
      */
-    public function isValid($uri)
+    public function isValid($uri): bool
     {
         $components = $this->parse($uri);
         

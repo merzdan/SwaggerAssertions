@@ -27,16 +27,16 @@ class UriRetriever implements BaseUriRetrieverInterface
     /**
      * @var null|UriRetrieverInterface
      */
-    protected $uriRetriever = null;
+    protected $uriRetriever;
 
 
-    private $path = null;
+    private $path;
 
     /**
      * @var array|object[]
      * @see loadSchema
      */
-    private $schemaCache = array();
+    private $schemaCache = [];
 
 
     public function setPath(string $path){
@@ -56,16 +56,16 @@ class UriRetriever implements BaseUriRetrieverInterface
     {
         $contentType = $uriRetriever->getContentType();
 
-        if (is_null($contentType)) {
+        if (null === $contentType) {
             // Well, we didn't get an invalid one
             return;
         }
 
-        if (in_array($contentType, array(Validator::SCHEMA_MEDIA_TYPE, 'application/json'))) {
+        if (\in_array($contentType, [Validator::SCHEMA_MEDIA_TYPE, 'application/json'], true)) {
             return;
         }
 
-        if (substr($uri, 0, 23) == 'http://json-schema.org/') {
+        if (strpos($uri, 'http://json-schema.org/') === 0) {
             //HACK; they deliver broken content types
             return true;
         }
@@ -81,9 +81,9 @@ class UriRetriever implements BaseUriRetrieverInterface
      *
      * @return UriRetrieverInterface
      */
-    public function getUriRetriever()
+    public function getUriRetriever(): UriRetrieverInterface
     {
-        if (is_null($this->uriRetriever)) {
+        if (null === $this->uriRetriever) {
             $this->setUriRetriever(new FileGetContents);
         }
 
@@ -126,13 +126,34 @@ class UriRetriever implements BaseUriRetrieverInterface
                     );
                 }
 
-                if (! is_object($jsonSchema)) {
+                if (!\is_object($jsonSchema)) {
                     throw new ResourceNotFoundException(
                         'Fragment part "' . $pathElement . '" is no object '
                         . ' in ' . $uri
                     );
                 }
             }
+        }
+
+        return $jsonSchema;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function retrieveSkeleton($uri, $baseUri = null)
+    {
+        $resolver = new UriResolver();
+        $resolvedUri = $fetchUri = $resolver->resolve($uri, $baseUri);
+
+        $jsonSchema = $this->loadSchema($fetchUri);
+
+        $paths = array_flip(array_keys($jsonSchema->paths));
+        unset($jsonSchema->paths, $jsonSchema->definition);
+        $jsonSchema->paths = $paths;
+
+        if ($jsonSchema instanceof \stdClass) {
+            $jsonSchema->id = $resolvedUri;
         }
 
         return $jsonSchema;
@@ -175,25 +196,22 @@ class UriRetriever implements BaseUriRetrieverInterface
      */
     protected function loadSchema($fetchUri)
     {
+        if (isset($this->schemaCache[$fetchUri])) {
+            return $this->schemaCache[$fetchUri];
+        }
+
         $uriRetriever = $this->getUriRetriever();
         $contents = $this->uriRetriever->retrieve($fetchUri);
         $this->confirmMediaType($uriRetriever, $fetchUri);
-        $jsonSchema = json_decode($contents, true);
+        $jsonSchema = json_decode($contents);
 
         if (JSON_ERROR_NONE < $error = json_last_error()) {
             throw new JsonDecodingException($error);
         }
 
-        if ($this->path && isset($jsonSchema['paths'][$this->path])) {
-            $pathNode = $jsonSchema['paths'][$this->path];
-            $pathsKey = \array_keys($jsonSchema['paths']);
-            unset($jsonSchema['paths']);
-            $jsonSchema['paths'] = \array_flip($pathsKey);
-            $jsonSchema['paths'][$this->path] = $pathNode;
-            unset($pathNode, $pathsKey);
-        }
+        $this->schemaCache[$fetchUri] = $jsonSchema;
 
-        return json_decode(json_encode($jsonSchema,JSON_FORCE_OBJECT));
+        return $jsonSchema;
     }
 
     /**
@@ -202,7 +220,7 @@ class UriRetriever implements BaseUriRetrieverInterface
      * @param UriRetrieverInterface $uriRetriever
      * @return $this for chaining
      */
-    public function setUriRetriever(UriRetrieverInterface $uriRetriever)
+    public function setUriRetriever(UriRetrieverInterface $uriRetriever): self
     {
         $this->uriRetriever = $uriRetriever;
 
@@ -215,12 +233,13 @@ class UriRetriever implements BaseUriRetrieverInterface
      * @param string $uri
      * @return array
      */
-    public function parse($uri)
+    public function parse($uri): array
     {
+        $match = null;
         preg_match('|^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?|', $uri, $match);
 
         $components = array();
-        if (5 < count($match)) {
+        if (5 < \count($match)) {
             $components =  array(
                 'scheme'    => $match[2],
                 'authority' => $match[4],
@@ -228,11 +247,11 @@ class UriRetriever implements BaseUriRetrieverInterface
             );
         }
 
-        if (7 < count($match)) {
+        if (isset($match[7])) {
             $components['query'] = $match[7];
         }
 
-        if (9 < count($match)) {
+        if (isset($match[9])) {
             $components['fragment'] = $match[9];
         }
 
@@ -245,7 +264,7 @@ class UriRetriever implements BaseUriRetrieverInterface
      * @param array $components
      * @return string
      */
-    public function generate(array $components)
+    public function generate(array $components): string
     {
         $uri = $components['scheme'] . '://'
             . $components['authority']
@@ -269,17 +288,17 @@ class UriRetriever implements BaseUriRetrieverInterface
      * @param string $baseUri Optional base URI
      * @return string
      */
-    public function resolve($uri, $baseUri = null)
+    public function resolve($uri, $baseUri = null): string
     {
         $components = $this->parse($uri);
-        $path = $components['path'];
+        $path       = $components['path'];
 
-        if ((array_key_exists('scheme', $components)) && ('http' === $components['scheme'])) {
+        if (array_key_exists('scheme', $components) && ('http' === $components['scheme'])) {
             return $uri;
         }
 
         $baseComponents = $this->parse($baseUri);
-        $basePath = $baseComponents['path'];
+        $basePath       = $baseComponents['path'];
 
         $baseComponents['path'] = UriResolver::combineRelativePathWithBasePath($path, $basePath);
 
@@ -290,7 +309,7 @@ class UriRetriever implements BaseUriRetrieverInterface
      * @param string $uri
      * @return boolean
      */
-    public function isValid($uri)
+    public function isValid($uri): bool
     {
         $components = $this->parse($uri);
 

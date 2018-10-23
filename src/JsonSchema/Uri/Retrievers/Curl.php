@@ -29,7 +29,7 @@ class Curl extends AbstractRetriever
 
     /**
      * {@inheritDoc}
-     * @see \JsonSchema\Uri\Retrievers\UriRetrieverInterface::retrieve()
+     * @see SwaggerAssertions\JsonSchema\Uri\Retrievers\UriRetrieverInterface::retrieve()
      */
     public function retrieve($uri)
     {
@@ -42,7 +42,7 @@ class Curl extends AbstractRetriever
 
         $response = curl_exec($ch);
         if (false === $response) {
-            throw new \JsonSchema\Exception\ResourceNotFoundException('JSON schema not found');
+            throw new SwaggerAssertions\JsonSchema\Exception\ResourceNotFoundException('JSON schema not found');
         }
 
         $this->fetchMessageBody($response);

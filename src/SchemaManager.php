@@ -29,7 +29,7 @@ class SchemaManager
      *
      * @return self
      */
-    public static function fromUri($definitionUri)
+    public static function fromUri($definitionUri): self
     {
         $refResolver = new RefResolver((new UriRetriever())->setUriRetriever(new FileGetContents()), new UriResolver());
 
@@ -69,7 +69,7 @@ class SchemaManager
     /**
      * @return string[]
      */
-    public function getPathTemplates()
+    public function getPathTemplates(): array
     {
         return array_keys((array) $this->definition->paths);
     }
@@ -144,7 +144,7 @@ class SchemaManager
      *
      * @return bool If path exists.
      */
-    public function hasPath(array $segments)
+    public function hasPath(array $segments): bool
     {
         $result = $this->definition;
         foreach ($segments as $segment) {
@@ -165,7 +165,7 @@ class SchemaManager
      *
      * @return bool
      */
-    public function findPathInTemplates($requestPath, &$path, &$params = [])
+    public function findPathInTemplates($requestPath, &$path, array &$params = []): bool
     {
         $uriTemplateManager = new UriTemplate();
         foreach ($this->getPathTemplates() as $template) {
@@ -309,7 +309,7 @@ class SchemaManager
             default:
                 // @codeCoverageIgnoreStart
                 throw new \DomainException('Too many body parameters. Only one is allowed');
-                // @codeCoverageIgnoreEnd
+            // @codeCoverageIgnoreEnd
         }
 
         $parameter = $parameters[0];
@@ -354,7 +354,7 @@ class SchemaManager
      *
      * @return \stdClass[]
      */
-    private function filterParametersObjectByLocation(array $parameters, $location)
+    private function filterParametersObjectByLocation($parameters, $location)
     {
         return array_values(array_filter(
             $parameters,

@@ -19,10 +19,10 @@ interface UriRetrieverInterface
     /**
      * Retrieve a schema from the specified URI
      * @param string $uri URI that resolves to a JSON schema
-     * @throws \JsonSchema\Exception\ResourceNotFoundException
+     * @throws SwaggerAssertions\JsonSchema\Exception\ResourceNotFoundException
      * @return mixed string|null
      */
-    public function retrieve($uri);
+    public function retrieve($uri): string;
     
     /**
      * Get media content type

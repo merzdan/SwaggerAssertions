@@ -38,12 +38,12 @@ class PredefinedArray extends AbstractRetriever
 
     /**
      * {@inheritDoc}
-     * @see \JsonSchema\Uri\Retrievers\UriRetrieverInterface::retrieve()
+     * @see SwaggerAssertions\JsonSchema\Uri\Retrievers\UriRetrieverInterface::retrieve()
      */
     public function retrieve($uri)
     {
         if (!array_key_exists($uri, $this->schemas)) {
-            throw new \JsonSchema\Exception\ResourceNotFoundException(sprintf(
+            throw new SwaggerAssertions\JsonSchema\Exception\ResourceNotFoundException(sprintf(
                 'The JSON schema "%s" was not found.',
                 $uri
             ));

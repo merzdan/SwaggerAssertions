@@ -12,6 +12,8 @@ namespace SwaggerAssertions\JsonSchema;
 use SwaggerAssertions\JsonSchema\Exception\UnresolvableJsonPointerException;
 use SwaggerAssertions\JsonSchema\Iterator\ObjectIterator;
 use SwaggerAssertions\JsonSchema\Entity\JsonPointer;
+use SwaggerAssertions\JsonSchema\Uri\UriResolver;
+use SwaggerAssertions\JsonSchema\Uri\UriRetriever;
 
 /**
  * Take in a source uri to locate a JSON schema and retrieve it and take care of all $ref references.
@@ -24,10 +26,10 @@ use SwaggerAssertions\JsonSchema\Entity\JsonPointer;
  */
 class RefResolver
 {
-    /** @var UriRetrieverInterface */
+    /** @var UriRetriever */
     private $uriRetriever;
 
-    /** @var UriResolverInterface */
+    /** @var UriResolver */
     private $uriResolver;
 
     /**
@@ -38,6 +40,13 @@ class RefResolver
     {
         $this->uriRetriever = $retriever;
         $this->uriResolver = $uriResolver;
+    }
+
+    public function resolveSkeleton($sourceUri)
+    {
+        $jsonPointer = new JsonPointer($sourceUri);
+        return $this->uriRetriever->retrieveSkeleton($jsonPointer->getFilename());
+
     }
 
     /**
@@ -83,7 +92,7 @@ class RefResolver
     {
         $objectIterator = new ObjectIterator($unresolvedSchema);
         foreach ($objectIterator as $toResolveSchema) {
-            if (property_exists($toResolveSchema, '$ref') && is_string($toResolveSchema->{'$ref'})) {
+            if (property_exists($toResolveSchema, '$ref') && \is_string($toResolveSchema->{'$ref'})) {
                 $jsonPointer = new JsonPointer($this->uriResolver->resolve($toResolveSchema->{'$ref'}, $fileName));
                 $refSchema = $this->resolveCached((string) $jsonPointer, $paths);
                 $this->unionSchemas($refSchema, $toResolveSchema, $fileName, $paths);
@@ -100,9 +109,9 @@ class RefResolver
     private function getRefSchema(JsonPointer $jsonPointer, $refSchema)
     {
         foreach ($jsonPointer->getPropertyPaths() as $path) {
-            if (is_object($refSchema) && property_exists($refSchema, $path)) {
+            if (\is_object($refSchema) && property_exists($refSchema, $path)) {
                 $refSchema = $refSchema->{$path};
-            } elseif (is_array($refSchema) && array_key_exists($path, $refSchema)) {
+            } elseif (\is_array($refSchema) && array_key_exists($path, $refSchema)) {
                 $refSchema = $refSchema[$path];
             } else {
                 throw new UnresolvableJsonPointerException(sprintf(
@@ -141,7 +150,7 @@ class RefResolver
                 $newSchema->$prop = $value;
                 unset($schema->$prop);
             }
-            $schema->allOf = array($newSchema, $refSchema);
+            $schema->allOf = [$newSchema, $refSchema];
         }
     }
 
@@ -149,10 +158,10 @@ class RefResolver
      * @param object $schema
      * @return bool
      */
-    private function hasSubSchemas($schema)
+    private function hasSubSchemas($schema): bool
     {
         foreach (array_keys(get_object_vars($schema)) as $propertyName) {
-            if (in_array($propertyName, $this->getReservedKeysWhichAreInFactSubSchemas())) {
+            if (\in_array($propertyName, $this->getReservedKeysWhichAreInFactSubSchemas(), true)) {
                 return true;
             }
         }
@@ -163,9 +172,9 @@ class RefResolver
     /**
      * @return string[]
      */
-    private function getReservedKeysWhichAreInFactSubSchemas()
+    private function getReservedKeysWhichAreInFactSubSchemas(): array
     {
-        return array(
+        return [
             'additionalItems',
             'additionalProperties',
             'extends',
@@ -179,7 +188,7 @@ class RefResolver
             'oneOf',
             'dependencies',
             'patternProperties',
-            'properties'
-        );
+            'properties',
+        ];
     }
 }
