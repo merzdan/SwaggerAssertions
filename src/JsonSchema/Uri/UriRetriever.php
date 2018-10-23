@@ -148,7 +148,7 @@ class UriRetriever implements BaseUriRetrieverInterface
 
         $jsonSchema = $this->loadSchema($fetchUri);
 
-        $paths = array_flip(array_keys($jsonSchema->paths));
+        $paths = array_flip(array_keys((array)$jsonSchema->paths));
         unset($jsonSchema->paths, $jsonSchema->definitions);
         $jsonSchema->paths = $paths;
 
